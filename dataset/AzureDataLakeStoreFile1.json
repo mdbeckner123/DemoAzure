@@ -39,7 +39,7 @@
 				"firstRowAsHeader": false
 			},
 			"fileName": {
-				"value": "concat('export-',utcnow(),'.txt')",
+				"value": "export_{utcnow()}.txt",
 				"type": "Expression"
 			},
 			"folderPath": "SalesData"

@@ -1,0 +1,13 @@
+{
+	"name": "SqlServerTableSales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LocalMachine",
+			"type": "LinkedServiceReference"
+		},
+		"type": "SqlServerTable",
+		"typeProperties": {
+			"tableName": "[dbo].[Sales]"
+		}
+	}
+}

@@ -30,16 +30,7 @@
 						"type": "AzureDataLakeStoreSink"
 					},
 					"enableStaging": false,
-					"dataIntegrationUnits": 0,
-					"translator": {
-						"type": "TabularTranslator",
-						"columnMappings": {
-							"FirstName": "First",
-							"LastName": "Last",
-							"Birthday": "DOB",
-							"ModifiedOn": "LastModified"
-						}
-					}
+					"dataIntegrationUnits": 0
 				},
 				"inputs": [
 					{

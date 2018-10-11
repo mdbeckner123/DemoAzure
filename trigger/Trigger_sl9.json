@@ -1,0 +1,23 @@
+{
+	"name": "Trigger_sl9",
+	"properties": {
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "CopyLocalDataToAzure",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2018-10-06T14:56:57.565Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

@@ -38,7 +38,10 @@
 				"skipLineCount": 0,
 				"firstRowAsHeader": false
 			},
-			"fileName": "export.txt",
+			"fileName": {
+				"value": "concat('export-',utcnow(),'.txt')",
+				"type": "Expression"
+			},
 			"folderPath": "SalesData"
 		}
 	}

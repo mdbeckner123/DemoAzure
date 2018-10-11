@@ -27,25 +27,29 @@
 						"type": "SqlSource"
 					},
 					"sink": {
-						"type": "SqlSink",
-						"writeBatchSize": 10000
+						"type": "AzureDataLakeStoreSink"
 					},
 					"enableStaging": false,
 					"dataIntegrationUnits": 0,
 					"translator": {
 						"type": "TabularTranslator",
-						"columnMappings": "FirstName: First, LastName: Last, Birthday: DOB, ModifiedOn: LastModified"
+						"columnMappings": {
+							"FirstName": "First",
+							"LastName": "Last",
+							"Birthday": "DOB",
+							"ModifiedOn": "LastModified"
+						}
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "SourceDataset_sl9",
+						"referenceName": "SqlServerTableSales",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DestinationDataset_sl9",
+						"referenceName": "AzureDataLakeStoreFile1",
 						"type": "DatasetReference"
 					}
 				]

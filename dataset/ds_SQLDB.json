@@ -1,0 +1,15 @@
+{
+	"name": "ds_SQLDB",
+	"properties": {
+		"description": "Dataset for Azure SQL DB",
+		"linkedServiceName": {
+			"referenceName": "ls_SQLDB",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureSqlTable",
+		"tags": {
+			"identity": "5c2c814a-9450-4493-98d6-5a205abb3a1a",
+			"gitCommitId": "0a4653f7e45b35a6412bb908a90c47c4a29eb39b"
+		}
+	}
+}

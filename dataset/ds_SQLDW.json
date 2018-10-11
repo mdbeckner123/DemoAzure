@@ -1,0 +1,15 @@
+{
+	"name": "ds_SQLDW",
+	"properties": {
+		"description": "Dataset for Azure SQL DW",
+		"linkedServiceName": {
+			"referenceName": "ls_SQLDW",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureSqlDWTable",
+		"tags": {
+			"identity": "b046dbcf-9d26-4742-ac88-ac37451c5875",
+			"gitCommitId": "0a4653f7e45b35a6412bb908a90c47c4a29eb39b"
+		}
+	}
+}

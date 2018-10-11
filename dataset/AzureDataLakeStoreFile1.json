@@ -39,7 +39,7 @@
 				"firstRowAsHeader": false
 			},
 			"fileName": {
-				"value": "@concat('export_',utcnow(),'.txt')",
+				"value": "@concat('export_',formatDateTime(utcnow(),'ss'),'.txt')",
 				"type": "Expression"
 			},
 			"folderPath": "SalesData"

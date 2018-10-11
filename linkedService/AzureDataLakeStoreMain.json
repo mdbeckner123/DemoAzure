@@ -1,0 +1,13 @@
+{
+	"name": "AzureDataLakeStoreMain",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "AzureDataLakeStore",
+		"typeProperties": {
+			"dataLakeStoreUri": "https://inotekdemodatalake.azuredatalakestore.net/webhdfs/v1",
+			"tenant": "d61c4b5c-858b-4554-821b-2a29fc79003f",
+			"subscriptionId": "dc8fb6d5-69a3-4dcd-8e47-aa8ef4307a30",
+			"resourceGroupName": "Default-BizTalk-East-US"
+		}
+	}
+}

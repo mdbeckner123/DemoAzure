@@ -1,0 +1,526 @@
+{
+	"name": "pipe_StartELT_ProdDB",
+	"properties": {
+		"description": "Pipeline for starting ELT for ProdDB system. It loads the data from SRC to DLS and DLS to DW.",
+		"activities": [
+			{
+				"name": "getProdDBTableList",
+				"description": "Get the list of table list from ProdDB source to load",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "getBatchID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": "SELECT * \nFROM CTL.fn_getTableList('ProdDB')"
+					},
+					"dataset": {
+						"referenceName": "ds_SQLDB",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEachProdDBTable",
+				"description": "Iterate through each ProdDB table",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Reset_BatchFlag",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('getProdDBTableList').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Insert_ETLAuditLog",
+							"description": "Execute SP to do log entry in ETLAuditLog Table",
+							"type": "SqlServerStoredProcedure",
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30
+							},
+							"typeProperties": {
+								"storedProcedureName": "[CTL].[usp_ETLAuditLog]",
+								"storedProcedureParameters": {
+									"ETLBatchID": {
+										"value": "@activity('getBatchID').output.value[0].BatchID",
+										"type": "int64"
+									},
+									"ETLLoadID": {
+										"value": "@item().ETLLoadID",
+										"type": "int32"
+									},
+									"SourceSystem": {
+										"value": "@{item().SourceSystem}",
+										"type": "string"
+									},
+									"PipelineName": {
+										"value": "@pipeline().Pipeline",
+										"type": "string"
+									},
+									"PipelineTriggerType": {
+										"value": "@pipeline().TriggerType",
+										"type": "string"
+									},
+									"LogType": {
+										"value": "ADF",
+										"type": "string"
+									},
+									"SourceName": {
+										"value": "@{item().SourceName}",
+										"type": "string"
+									},
+									"SinkName": {
+										"value": "  ",
+										"type": "string"
+									},
+									"SinkPath": {
+										"value": "  ",
+										"type": "string"
+									},
+									"DataSliceStartTime": {
+										"value": "@{item().DataSliceStartTime}",
+										"type": "datetime"
+									},
+									"DataSliceEndTime": {
+										"value": "@{item().DataSliceEndTime}",
+										"type": "datetime"
+									},
+									"RowsExtracted": {
+										"value": "0",
+										"type": "int32"
+									},
+									"ETLStartTime": {
+										"value": "2018-01-01T01:01:00Z",
+										"type": "datetime"
+									},
+									"LoadStatus": {
+										"value": "InProgress",
+										"type": "string"
+									},
+									"DatabaseName": {
+										"value": "@{item().DatabaseName}",
+										"type": "string"
+									},
+									"FileSizeInByte": {
+										"value": "0",
+										"type": "int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_SQLDB",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Copy_ProdDB_Table",
+							"description": "Copy the data from ProdDB table to DLS",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Insert_ETLAuditLog",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 30
+							},
+							"typeProperties": {
+								"source": {
+									"type": "SqlSource",
+									"sqlReaderQuery": "@{item().ETLQuery}"
+								},
+								"sink": {
+									"type": "AzureDataLakeStoreSink"
+								},
+								"enableStaging": false,
+								"cloudDataMovementUnits": 0
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_src_ProdDB",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_DLS",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "update_ETLAuditLog",
+							"description": "Update the ETL Audit Log table with remaining attributes values",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy_ProdDB_Table",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30
+							},
+							"typeProperties": {
+								"storedProcedureName": "[CTL].[usp_ETLAuditLog]",
+								"storedProcedureParameters": {
+									"ETLBatchID": {
+										"value": "@activity('getBatchID').output.value[0].BatchID",
+										"type": "int64"
+									},
+									"ETLLoadID": {
+										"value": "@item().ETLLoadID",
+										"type": "int32"
+									},
+									"SourceSystem": {
+										"value": "  ",
+										"type": "string"
+									},
+									"PipelineName": {
+										"value": "  ",
+										"type": "string"
+									},
+									"PipelineTriggerType": {
+										"value": "  ",
+										"type": "string"
+									},
+									"LogType": {
+										"value": "  ",
+										"type": "string"
+									},
+									"SourceName": {
+										"value": "  ",
+										"type": "string"
+									},
+									"SinkName": {
+										"value": "@{item().SinkName}",
+										"type": "string"
+									},
+									"SinkPath": {
+										"value": "@{item().SinkPath}",
+										"type": "string"
+									},
+									"DataSliceStartTime": {
+										"value": "2018-01-01T01:01:00Z",
+										"type": "datetime"
+									},
+									"DataSliceEndTime": {
+										"value": "2018-01-01T01:01:00Z",
+										"type": "datetime"
+									},
+									"RowsExtracted": {
+										"value": "@activity('Copy_ProdDB_Table').output.rowsCopied",
+										"type": "int32"
+									},
+									"ETLStartTime": {
+										"value": "2018-01-01T01:01:00Z",
+										"type": "datetime"
+									},
+									"LoadStatus": {
+										"value": "Completed",
+										"type": "string"
+									},
+									"DatabaseName": {
+										"value": " ",
+										"type": "string"
+									},
+									"FileSizeInByte": {
+										"value": "@activity('Copy_ProdDB_Table').output.dataWritten",
+										"type": "int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_SQLDB",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "usp_update_watermark",
+							"description": "Update the watermark timeslice and status",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "update_ETLAuditLog",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30
+							},
+							"typeProperties": {
+								"storedProcedureName": "[CTL].[usp_Update_Watermark]",
+								"storedProcedureParameters": {
+									"SourceName": {
+										"value": "@{item().SourceName}",
+										"type": "string"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_SQLDB",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Update_ETLAuditLog_FailStatus",
+				"description": "Update ETLAuditLog Table for any failure",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ForEachProdDBTable",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"typeProperties": {
+					"storedProcedureName": "[CTL].[usp_ETLAuditLog]",
+					"storedProcedureParameters": {
+						"ETLBatchID": {
+							"value": "@activity('getBatchID').output.value[0].BatchID",
+							"type": "int"
+						},
+						"ETLLoadID": {
+							"value": "1",
+							"type": "int"
+						},
+						"SourceSystem": {
+							"value": "  ",
+							"type": "string"
+						},
+						"PipelineName": {
+							"value": "  ",
+							"type": "string"
+						},
+						"PipelineTriggerType": {
+							"value": "  ",
+							"type": "string"
+						},
+						"LogType": {
+							"value": "  ",
+							"type": "string"
+						},
+						"SourceName": {
+							"value": "  ",
+							"type": "string"
+						},
+						"SinkName": {
+							"value": "  ",
+							"type": "string"
+						},
+						"SinkPath": {
+							"value": "  ",
+							"type": "string"
+						},
+						"DataSliceStartTime": {
+							"value": "2018-01-01T01:01:00Z",
+							"type": "datetime"
+						},
+						"DataSliceEndTime": {
+							"value": "2018-01-01T01:01:00Z",
+							"type": "datetime"
+						},
+						"ETLStartTime": {
+							"value": "2018-01-01T01:01:00Z",
+							"type": "datetime"
+						},
+						"RowsExtracted": {
+							"value": "0",
+							"type": "int"
+						},
+						"LoadStatus": {
+							"value": "Failed",
+							"type": "string"
+						},
+						"DatabaseName": {
+							"value": " ",
+							"type": "string"
+						},
+						"FileSizeInByte": {
+							"value": "0",
+							"type": "int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_SQLDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Reset_BatchFlag",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "getProdDBTableList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"typeProperties": {
+					"storedProcedureName": "[CTL].[usp_Update_BatchFlag]",
+					"storedProcedureParameters": {
+						"IsBatchReady": {
+							"value": "false",
+							"type": "Boolean"
+						},
+						"IsDLSLoadInProgress": {
+							"value": "true",
+							"type": "Boolean"
+						},
+						"DatabaseName": {
+							"value": "ProdDB",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_SQLDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Set_BatchFlag",
+				"description": "Set back the Batch flag if no current batch running",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Check_DLSLoad_Progress",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"typeProperties": {
+					"storedProcedureName": "[CTL].[usp_Update_BatchFlag]",
+					"storedProcedureParameters": {
+						"IsBatchReady": {
+							"value": "true",
+							"type": "Boolean"
+						},
+						"IsDLSLoadInProgress": {
+							"value": "@activity('Check_DLSLoad_Progress').output.firstrow.DLSLoadProgress",
+							"type": "Boolean"
+						},
+						"DatabaseName": {
+							"value": "ProdDB",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_SQLDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Check_DLSLoad_Progress",
+				"description": "Check if Src to DLS load is in progress",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "ForEachProdDBTable",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": "SELECT CASE WHEN COUNT(1) > 0 THEN 'true' ELSE 'false' END AS DLSLoadProgress\nFROM CTL.ETLAuditLog\nWHERE LoadStatus = 'InProgress'\n\tAND DatabaseName = 'ProdDB'\n\tAND ETLBatchID = (SELECT MAX(ETLBatchID) FROM CTL.ETLAuditLog WHERE DatabaseName = 'ProdDB')"
+					},
+					"dataset": {
+						"referenceName": "ds_SQLDB",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "getBatchID",
+				"description": "Get the ETL BatchID for the run",
+				"type": "Lookup",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": "SELECT (NEXT VALUE FOR CTL.SEQ_ETLBATCHID)  AS BatchID"
+					},
+					"dataset": {
+						"referenceName": "ds_SQLDB",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"tags": {
+			"identity": "de16adb2-a047-4f5e-88ac-34a1735b7b63",
+			"gitCommitId": "b55e1cd076eb76237587411b55ac13ef13b0f675"
+		}
+	}
+}

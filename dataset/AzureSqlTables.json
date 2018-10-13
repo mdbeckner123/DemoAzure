@@ -1,0 +1,13 @@
+{
+	"name": "AzureSqlTables",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureSqlTable",
+		"typeProperties": {
+			"tableName": "[dbo].[Contact]"
+		}
+	}
+}

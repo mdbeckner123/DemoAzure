@@ -6,6 +6,28 @@
 			"type": "LinkedServiceReference"
 		},
 		"type": "AzureSqlDWTable",
+		"structure": [
+			{
+				"name": "ID",
+				"type": "Int32"
+			},
+			{
+				"name": "CustomerID",
+				"type": "String"
+			},
+			{
+				"name": "DateOfSale",
+				"type": "DateTime"
+			},
+			{
+				"name": "AmountOfSale",
+				"type": "Decimal"
+			},
+			{
+				"name": "ItemPurchased",
+				"type": "String"
+			}
+		],
 		"typeProperties": {
 			"tableName": "[dbo].[StageSale]"
 		}

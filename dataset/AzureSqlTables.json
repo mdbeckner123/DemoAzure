@@ -6,6 +6,28 @@
 			"type": "LinkedServiceReference"
 		},
 		"type": "AzureSqlTable",
+		"structure": [
+			{
+				"name": "ID",
+				"type": "Int32"
+			},
+			{
+				"name": "First",
+				"type": "String"
+			},
+			{
+				"name": "Last",
+				"type": "String"
+			},
+			{
+				"name": "DOB",
+				"type": "DateTime"
+			},
+			{
+				"name": "LastModified",
+				"type": "DateTime"
+			}
+		],
 		"typeProperties": {
 			"tableName": "[dbo].[Contact]"
 		}

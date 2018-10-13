@@ -1,0 +1,13 @@
+{
+	"name": "AzureSqlDWTable_StageCustomer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDW1",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureSqlDWTable",
+		"typeProperties": {
+			"tableName": "[dbo].[StageCustomers]"
+		}
+	}
+}

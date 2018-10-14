@@ -26,22 +26,29 @@
 							"useTypeDefault": true
 						}
 					},
-					"enableStaging": false,
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						}
+					},
 					"dataIntegrationUnits": 0,
 					"translator": {
 						"type": "TabularTranslator",
 						"columnMappings": {
-							"ID": "CustomerID",
-							"First": "LastName",
-							"Last": "FirstName",
-							"DOB": "Birthday",
-							"LastModified": "ModifiedOn"
+							"CustomerID": "CustomerID",
+							"LastName": "LastName",
+							"FirstName": "FirstName",
+							"Birthday": "Birthday",
+							"CreatedOn": "CreatedOn",
+							"ModifiedOn": "ModifiedOn"
 						}
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTables",
+						"referenceName": "SourceDataset_sl9",
 						"type": "DatasetReference"
 					}
 				],
@@ -77,19 +84,15 @@
 					},
 					"sink": {
 						"type": "SqlDWSink",
-						"allowPolyBase": true,
-						"writeBatchSize": 10000,
-						"polyBaseSettings": {
-							"rejectValue": 0,
-							"rejectType": "value",
-							"useTypeDefault": true
-						}
+						"allowPolyBase": false,
+						"writeBatchSize": 10000
 					},
 					"enableStaging": false,
 					"dataIntegrationUnits": 0,
 					"translator": {
 						"type": "TabularTranslator",
 						"columnMappings": {
+							"Prop_0": "ID",
 							"Prop_1": "CustomerID",
 							"Prop_2": "DateOfSale",
 							"Prop_3": "AmountOfSale",

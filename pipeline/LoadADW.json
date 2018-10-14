@@ -36,14 +36,7 @@
 					"dataIntegrationUnits": 0,
 					"translator": {
 						"type": "TabularTranslator",
-						"columnMappings": {
-							"CustomerID": "CustomerID",
-							"LastName": "LastName",
-							"FirstName": "FirstName",
-							"Birthday": "Birthday",
-							"CreatedOn": "CreatedOn",
-							"ModifiedOn": "ModifiedOn"
-						}
+						"columnMappings": "CustomerID: CustomerID, LastName: LastName, FirstName: FirstName, Birthday: Birthday, CreatedOn: CreatedOn, ModifiedOn: ModifiedOn"
 					}
 				},
 				"inputs": [
@@ -133,6 +126,30 @@
 				},
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[LoadDataFromStaging]"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDW1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored Procedure1",
+				"type": "SqlServerStoredProcedure",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[EnableLogging]",
+					"storedProcedureParameters": {
+						"loggingEnabled": {
+							"value": "",
+							"type": "Boolean"
+						}
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureSqlDW1",

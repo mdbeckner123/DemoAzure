@@ -138,6 +138,10 @@
 					"referenceName": "AzureSqlDW1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition"
 			}
 		]
 	}

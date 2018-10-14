@@ -16,7 +16,7 @@
 					"storedProcedureName": "[dbo].[EnableLogging]",
 					"storedProcedureParameters": {
 						"loggingEnabled": {
-							"value": null,
+							"value": "1",
 							"type": "Boolean"
 						}
 					}

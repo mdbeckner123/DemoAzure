@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Stored Procedure1",
+				"name": "Call_Sproc_Is_Log_Enabled",
 				"type": "SqlServerStoredProcedure",
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -31,7 +31,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Stored Procedure1",
+						"activity": "Call_Sproc_Is_Log_Enabled",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -39,7 +39,7 @@
 				],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Stored Procedure1').output == 1",
+						"value": "@activity('Stored Procedure1').output = 1",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [

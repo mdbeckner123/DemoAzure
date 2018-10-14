@@ -16,7 +16,7 @@
 					"storedProcedureName": "[dbo].[EnableLogging]",
 					"storedProcedureParameters": {
 						"loggingEnabled": {
-							"value": "",
+							"value": null,
 							"type": "Boolean"
 						}
 					}
@@ -39,9 +39,38 @@
 				],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Stored Procedure1').output = 1",
+						"value": "@equals(activity('Call_Sproc_Is_Log_Enabled').output,1)",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "Stored Procedure1",
+							"type": "SqlServerStoredProcedure",
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[WriteToLog]",
+								"storedProcedureParameters": {
+									"details": {
+										"value": {
+											"value": "activity('Call_Sproc_Is_Log_Enabled').output",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDW1",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "Stored Procedure1",

@@ -29,7 +29,7 @@
 			}
 		],
 		"typeProperties": {
-			"tableName": "[dbo].[StageSale]"
+			"tableName": "[dbo].[StageSales]"
 		}
 	}
 }

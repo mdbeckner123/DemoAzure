@@ -9,7 +9,7 @@
 		"structure": [
 			{
 				"name": "ID",
-				"type": "Int32"
+				"type": "String"
 			},
 			{
 				"name": "CustomerID",

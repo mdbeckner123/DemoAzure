@@ -58,7 +58,7 @@
 								"storedProcedureParameters": {
 									"details": {
 										"value": {
-											"value": "@activity('Call_Sproc_Is_Log_Enabled').output",
+											"value": "@activity('Call_Sproc_Is_Log_Enabled').output.value[0]",
 											"type": "Expression"
 										},
 										"type": "String"

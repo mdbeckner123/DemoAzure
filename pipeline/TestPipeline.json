@@ -44,7 +44,7 @@
 					},
 					"ifFalseActivities": [
 						{
-							"name": "Stored Procedure1",
+							"name": "Write to test",
 							"type": "SqlServerStoredProcedure",
 							"policy": {
 								"timeout": "7.00:00:00",
@@ -58,7 +58,7 @@
 								"storedProcedureParameters": {
 									"details": {
 										"value": {
-											"value": "activity('Call_Sproc_Is_Log_Enabled').output",
+											"value": "@activity('Call_Sproc_Is_Log_Enabled').output",
 											"type": "Expression"
 										},
 										"type": "String"
